@@ -308,6 +308,40 @@ hc_ms3 = vcovHC(ms3, type = "HC1" )
 ms3r = coeftest(ms3, vcov = hc_ms3)
 ms3r
 
+#Test Risk ? (Variance measured not SD)
+
+var.test(ROI_BFI ~ Remake, data = data_match2)
+var.test(ROI_V ~ Remake, data = data_match2)
+var.test(ROI_MKT ~ Remake, data = data_match2)
+
+
+data_match2 %>% 
+  mutate(Remake = ifelse(Remake == 1, labs[1], labs[2])) %>% 
+  ggplot(aes(x = log(ROI_BFI), y = ..density.., fill = Remake)) +
+  geom_density(color="#e9ecef", alpha=0.6, position = 'identity') + 
+  scale_fill_brewer(palette = "Set1") + 
+  theme_minimal()
+
+data_match2 %>% 
+  mutate(Remake = ifelse(Remake == 1, labs[1], labs[2])) %>% 
+  ggplot(aes(x = log(ROI_V), y = ..density.., fill = Remake)) +
+  geom_density(color="#e9ecef", alpha=0.6, position = 'identity') + 
+  scale_fill_brewer(palette = "Set1") + 
+  theme_minimal()
+
+data_match2 %>% 
+  mutate(Remake = ifelse(Remake == 1, labs[1], labs[2])) %>% 
+  ggplot(aes(x = log(ROI_MKT), y = ..density.., fill = Remake)) +
+  geom_density(color="#e9ecef", alpha=0.6, position = 'identity') + 
+  scale_fill_brewer(palette = "Set1") + 
+  theme_minimal()
+
+sdm <- data_match2 %>% 
+  dplyr::group_by(Remake) %>% 
+  dplyr::select(one_of(c('ROI_BFI', 'ROI_V', 'ROI_MKT'))) %>%
+  dplyr::summarise_all(funs(sd(., na.rm = T)))
+sdm
+
 
 #### Export to Latex ####
 stargazer(m1.2r, m2.2r, m3.2r,  title = "Movie Remake and ROI Models", 
